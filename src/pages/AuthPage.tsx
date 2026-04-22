@@ -188,7 +188,10 @@ const AuthPage = () => {
           </button>
         </p>
 
-        <div className="mt-5 pt-4 border-t border-border flex items-center justify-center">
+        <div className="mt-5 pt-4 border-t border-border flex items-center justify-center gap-4">
+          <Link to="/" className="text-[11px] text-muted-foreground hover:text-foreground no-underline">
+            Back to Home
+          </Link>
           <Link to="/agent-login" className="text-[11px] text-muted-foreground hover:text-foreground no-underline flex items-center gap-1.5">
             <Shield className="w-3 h-3" /> Agent Portal
           </Link>
@@ -199,3 +202,5 @@ const AuthPage = () => {
 };
 
 export default AuthPage;
+
+

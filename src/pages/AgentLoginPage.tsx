@@ -100,7 +100,7 @@ const AgentLoginPage = () => {
               required
               minLength={6}
               className="w-full bg-[hsl(220,30%,18%)] border border-[hsl(40,40%,40%)/0.3] text-white text-sm px-3.5 py-2.5 pr-10 outline-none transition-all focus:border-[hsl(40,80%,55%)] focus:ring-2 focus:ring-[hsl(40,80%,55%)/0.15] rounded-xl placeholder:text-white/30"
-              placeholder="••••••••"
+              placeholder="********"
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors bg-transparent border-none cursor-pointer p-0">
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -115,9 +115,12 @@ const AgentLoginPage = () => {
 
         {error && <p className="text-xs text-[hsl(0,80%,65%)] text-center mt-3 bg-[hsl(0,80%,55%)/0.1] rounded-xl px-3 py-2.5 border border-[hsl(0,80%,55%)/0.2]">{error}</p>}
 
-        <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-center">
+        <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-center gap-4">
+          <Link to="/" className="text-[11px] text-white/50 hover:text-white no-underline">
+            Back to Home
+          </Link>
           <Link to="/auth" className="text-[11px] text-white/50 hover:text-white no-underline">
-            ← Back to Client Portal
+            Back to Client Portal
           </Link>
         </div>
       </form>
@@ -126,3 +129,4 @@ const AgentLoginPage = () => {
 };
 
 export default AgentLoginPage;
+

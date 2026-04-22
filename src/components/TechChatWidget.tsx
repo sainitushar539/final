@@ -103,7 +103,7 @@ const TechChatWidget = () => {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
+          className="fixed bottom-4 right-4 z-[220] w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center"
           aria-label="Open chat"
         >
           <MessageCircle className="w-5 h-5" />
@@ -112,7 +112,7 @@ const TechChatWidget = () => {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-4 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] h-[480px] max-h-[calc(100vh-3rem)] flex flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden animate-scale-in">
+        <div className="fixed bottom-4 right-4 z-[220] w-[340px] max-w-[calc(100vw-2rem)] h-[480px] max-h-[calc(100vh-3rem)] flex flex-col rounded-2xl border border-border bg-card shadow-2xl overflow-hidden animate-scale-in">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary/[0.06] border-b border-border">
             <div className="flex items-center gap-2">

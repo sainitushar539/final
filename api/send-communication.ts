@@ -1,5 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { sendCommunication } from '../src/lib/sendCommunication';
+import { sendCommunication } from '../src/lib/sendCommunication.js';
+
+type ApiRequest = {
+  method?: string;
+  body?: any;
+};
+
+type ApiResponse = {
+  setHeader: (name: string, value: string) => void;
+  status: (code: number) => { json: (payload: unknown) => void; end: () => void };
+};
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,7 +16,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: ApiRequest, res: ApiResponse) {
   res.setHeader('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
   res.setHeader('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
   res.setHeader('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);

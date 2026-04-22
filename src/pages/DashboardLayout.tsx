@@ -18,6 +18,7 @@ import LeadsCRMPage from './LeadsCRMPage';
 import LeadFinderPage from './LeadFinderPage';
 import NurtureBotPage from './NurtureBotPage';
 import CRMEmailPage from './CRMEmailPage';
+import TechChatWidget from '@/components/TechChatWidget';
 
 const adminPageTitles: Record<string, { title: string; subtitle?: string }> = {
   dashboard: { title: 'Fund Manager Dashboard' },
@@ -208,6 +209,7 @@ const DashboardLayout = () => {
           )}
         </main>
       </div>
+      {!isAdmin && <TechChatWidget />}
     </div>
   );
 };

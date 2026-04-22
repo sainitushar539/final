@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import type { CommunicationSettings } from './communicationSettings';
+import type { CommunicationSettings } from './communicationSettings.js';
 
 export type SendChannel = 'email' | 'sms';
 
