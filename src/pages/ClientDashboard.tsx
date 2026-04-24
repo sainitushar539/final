@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { Json } from '@/integrations/supabase/types';
 import { Sparkles, Upload, FileCheck, AlertTriangle, Brain, Target, DollarSign, FileText, TrendingUp, Zap, ArrowRight } from 'lucide-react';
 import { formatGoal, normalizeGoals } from '@/lib/questionnaire';
+import AgentHireDialog from '@/components/AgentHireDialog';
 
 interface ChecklistItem { label: string; complete: boolean; }
 interface BusinessRow {
@@ -28,6 +29,18 @@ interface QuestionnaireResult {
 }
 interface RepNote { id: string; note: string; visibility: 'internal_only' | 'client_visible'; created_at: string; }
 interface Submission { id: string; checklist_key: string; file_name: string; file_url: string; submitted_at: string; verified: boolean; }
+interface AgentSubscription {
+  id: string;
+  business_id: string;
+  user_id: string;
+  agent_type: string;
+  status: string;
+  active: boolean;
+  price_monthly: number;
+}
+
+const MONTHLY_PRICE = 89;
+const getAgentType = (agentId: string) => agentId === 'docs' ? 'documentation' : agentId;
 
 const agentDefs = [
   { id: 'fundability', Icon: Zap, name: 'Credit Enhancement Agent', desc: 'Score optimization & gap identification', weight: 0.2, gradient: 'from-blue-500 to-indigo-500' },
@@ -104,11 +117,15 @@ const ClientDashboard = () => {
   const [repNotes, setRepNotes] = useState<RepNote[]>([]);
   const [selectedBizId, setSelectedBizId] = useState('');
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [subscriptions, setSubscriptions] = useState<AgentSubscription[]>([]);
   const [uploading, setUploading] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'canvas' | 'checklist' | 'agents'>('canvas');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadTarget, setUploadTarget] = useState('');
+  const [hireAgentId, setHireAgentId] = useState('');
+  const [hireProcessing, setHireProcessing] = useState(false);
+  const [subscriptionError, setSubscriptionError] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -119,7 +136,9 @@ const ClientDashboard = () => {
         .eq('user_id', user.id).eq('questionnaire_completed', true).order('updated_at', { ascending: false }),
       supabase.from('rep_notes').select('id, note, visibility, created_at')
         .eq('user_id', user.id).eq('visibility', 'client_visible').order('created_at', { ascending: false }),
-    ]).then(([businessResult, questionnaireResult, notesResult]) => {
+      supabase.from('business_agent_subscriptions').select('id, business_id, user_id, agent_type, status, active, price_monthly')
+        .eq('user_id', user.id),
+    ]).then(([businessResult, questionnaireResult, notesResult, subscriptionResult]) => {
         const businessData = businessResult.data || [];
         const questionnaireData = (questionnaireResult.data || []) as QuestionnaireResult[];
         if (businessData.length > 0) {
@@ -145,6 +164,12 @@ const ClientDashboard = () => {
         }
         if (questionnaireData) setQuestionnaireResults(questionnaireData);
         if (notesResult.data) setRepNotes(notesResult.data as RepNote[]);
+        if (subscriptionResult.error) {
+          setSubscriptionError(subscriptionResult.error.message);
+          setSubscriptions([]);
+        } else if (subscriptionResult.data) {
+          setSubscriptions(subscriptionResult.data as AgentSubscription[]);
+        }
         setLoading(false);
       });
   }, [user]);
@@ -174,6 +199,41 @@ const ClientDashboard = () => {
   const selectedGoals = normalizeGoals(questionnaire?.selected_goals || []);
   const roadmap = Array.isArray(questionnaire?.roadmap) ? questionnaire.roadmap as string[] : [];
   const canUploadDocuments = !selectedBizId.startsWith('questionnaire-');
+  const canHireAgents = !selectedBizId.startsWith('questionnaire-');
+
+  const isAgentHired = (agentId: string) =>
+    subscriptions.some(subscription =>
+      subscription.business_id === selectedBizId &&
+      subscription.agent_type === getAgentType(agentId) &&
+      subscription.active &&
+      subscription.status === 'active');
+
+  const confirmHireAgent = async () => {
+    if (!user || !selectedBizId || !hireAgentId || !canHireAgents) return;
+    setHireProcessing(true);
+    try {
+      const { data, error } = await supabase.from('business_agent_subscriptions').upsert({
+        business_id: selectedBizId,
+        user_id: user.id,
+        agent_type: getAgentType(hireAgentId),
+        price_monthly: MONTHLY_PRICE,
+        status: 'active',
+        active: true,
+        dummy_payment_success: true,
+      }, { onConflict: 'business_id,agent_type' }).select('id, business_id, user_id, agent_type, status, active, price_monthly').single();
+      if (error) throw error;
+      setSubscriptions(prev => [
+        ...prev.filter(subscription => !(subscription.business_id === selectedBizId && subscription.agent_type === getAgentType(hireAgentId))),
+        data as AgentSubscription,
+      ]);
+      setSubscriptionError('');
+      setHireAgentId('');
+    } catch (error: any) {
+      setSubscriptionError(error?.message || 'Failed to hire agent');
+    } finally {
+      setHireProcessing(false);
+    }
+  };
 
   const handleUpload = async (checklistKey: string) => { setUploadTarget(checklistKey); fileInputRef.current?.click(); };
 
@@ -248,6 +308,13 @@ const ClientDashboard = () => {
 
   return (
     <div className="space-y-5">
+      <AgentHireDialog
+        open={!!hireAgentId}
+        agentName={agentDefs.find(agent => agent.id === hireAgentId)?.name || 'Agent'}
+        onClose={() => setHireAgentId('')}
+        onConfirm={confirmHireAgent}
+        processing={hireProcessing}
+      />
       <input type="file" ref={fileInputRef} className="hidden" onChange={onFileSelected} accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.csv" />
 
       {biz && (
@@ -385,6 +452,7 @@ const ClientDashboard = () => {
                 {agentScores.map(agent => {
                   const r = 30; const c = 2 * Math.PI * r;
                   const color = agent.score >= 70 ? '#10b981' : agent.score >= 45 ? '#f59e0b' : '#ef4444';
+                  const hired = isAgentHired(agent.id);
                   return (
                     <div key={agent.id} className="bg-background rounded-xl border border-border shadow-sm p-4 text-center hover:border-primary/20 hover:shadow transition-all">
                       <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${agent.gradient} flex items-center justify-center mx-auto mb-3`}>
@@ -403,10 +471,33 @@ const ClientDashboard = () => {
                       </div>
                       <div className="text-xs font-bold text-foreground">{agent.name}</div>
                       <div className="text-[10px] text-muted-foreground mt-0.5">{agent.desc}</div>
+                      <div className="mt-3">
+                        {hired ? (
+                          <span className="inline-flex items-center justify-center rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold text-emerald-600">
+                            Hired at ${MONTHLY_PRICE}/mo
+                          </span>
+                        ) : canHireAgents ? (
+                          <button
+                            onClick={() => setHireAgentId(agent.id)}
+                            className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-2 text-[11px] font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                          >
+                            Hire Agent
+                          </button>
+                        ) : (
+                          <span className="inline-flex items-center justify-center rounded-full bg-secondary px-3 py-1 text-[10px] font-semibold text-muted-foreground">
+                            Complete setup to hire
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
               </div>
+              {subscriptionError && (
+                <div className="rounded-xl border border-destructive/15 bg-destructive/5 px-4 py-3 text-xs text-destructive">
+                  Subscription setup error: {subscriptionError}. Apply the latest Supabase migration so `business_agent_subscriptions` exists, then refresh the dashboard.
+                </div>
+              )}
             </div>
           )}
 

@@ -142,6 +142,30 @@ const agentModules = [
 
 type Phase = 'contact' | 'snapshot' | 'results' | 'booking' | 'paywall' | 'deep-a' | 'deep-b' | 'deep-c' | 'deep-d' | 'signup';
 type Option = { label: string; value: string };
+type DraftFormData = {
+  selectedGoals?: string[];
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  businessName?: string;
+  website?: string;
+  noWebsite?: boolean;
+  creditScore?: string;
+  revenue?: string;
+  timeInBusiness?: string;
+  bizDescription?: string;
+  bizLocation?: string;
+  bizStage?: string;
+  profitable?: string;
+  financials?: string;
+  cashflow?: string;
+  customers?: string;
+  revenueModel?: string;
+  bottleneck?: string;
+  fundingPurposes?: string[];
+  fundingTimeline?: string;
+};
 
 interface InputFieldProps {
   label: string;
@@ -310,11 +334,22 @@ const mapTimeInBusiness = (value?: unknown) => {
   return timeMap[String(value || '')] || String(value || '');
 };
 
+const phaseValues: Phase[] = ['contact', 'snapshot', 'results', 'booking', 'paywall', 'deep-a', 'deep-b', 'deep-c', 'deep-d', 'signup'];
+
+const isValidPhase = (value: unknown): value is Phase => phaseValues.includes(value as Phase);
+
 const isMissingQuestionnaireResultsTable = (error: unknown) => {
   const err = error as { code?: string; message?: string } | null;
   if (!err) return false;
   if (err.code === 'PGRST205' || err.code === '42P01') return true;
   return (err.message || '').toLowerCase().includes('questionnaire_results');
+};
+
+const isMissingOnboardingDraftsTable = (error: unknown) => {
+  const err = error as { code?: string; message?: string } | null;
+  if (!err) return false;
+  if (err.code === 'PGRST205' || err.code === '42P01') return true;
+  return (err.message || '').toLowerCase().includes('onboarding_drafts');
 };
 
 const OnboardingPage = () => {
@@ -351,6 +386,42 @@ const OnboardingPage = () => {
   const [fundingPurposes, setFundingPurposes] = useState<string[]>([]);
   const [fundingTimeline, setFundingTimeline] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
+
+  const applyDraft = (draftPhase?: unknown, formData?: DraftFormData | null) => {
+    const safeData = formData || {};
+    if (safeData.selectedGoals?.length) setSelectedGoals(safeData.selectedGoals);
+    if (safeData.firstName) setFirstName(safeData.firstName);
+    if (safeData.lastName) setLastName(safeData.lastName);
+    if (safeData.email) setEmail(safeData.email);
+    if (safeData.phone) setPhone(safeData.phone);
+    if (safeData.businessName) setBusinessName(safeData.businessName);
+    if (typeof safeData.website === 'string') setWebsite(safeData.website);
+    if (typeof safeData.noWebsite === 'boolean') setNoWebsite(safeData.noWebsite);
+    if (safeData.creditScore) setCreditScore(safeData.creditScore);
+    if (safeData.revenue) setRevenue(safeData.revenue);
+    if (safeData.timeInBusiness) setTimeInBusiness(safeData.timeInBusiness);
+    if (safeData.bizDescription) setBizDescription(safeData.bizDescription);
+    if (safeData.bizLocation) setBizLocation(safeData.bizLocation);
+    if (safeData.bizStage) setBizStage(safeData.bizStage);
+    if (safeData.profitable) setProfitable(safeData.profitable);
+    if (safeData.financials) setFinancials(safeData.financials);
+    if (safeData.cashflow) setCashflow(safeData.cashflow);
+    if (safeData.customers) setCustomers(safeData.customers);
+    if (safeData.revenueModel) setRevenueModel(safeData.revenueModel);
+    if (safeData.bottleneck) setBottleneck(safeData.bottleneck);
+    if (safeData.fundingPurposes?.length) setFundingPurposes(safeData.fundingPurposes);
+    if (safeData.fundingTimeline) setFundingTimeline(safeData.fundingTimeline);
+    if (isValidPhase(draftPhase)) setPhase(draftPhase);
+  };
+
+  const readLocalDraft = () => {
+    try {
+      const raw = sessionStorage.getItem('onboardingSnapshot');
+      return raw ? JSON.parse(raw) as { phase?: Phase; formData?: DraftFormData } : null;
+    } catch {
+      return null;
+    }
+  };
 
   const hydrateFromLead = (lead: any) => {
     const contactName = lead?.contactName || lead?.contact_name || '';
@@ -410,7 +481,7 @@ const OnboardingPage = () => {
       const userEmail = user.email?.trim() || '';
 
       try {
-        const [{ data: existingBusiness }, { data: existingResult }, { data: profile }, leadResult] = await Promise.all([
+        const [{ data: existingBusiness }, { data: existingResult }, { data: profile }, leadResult, draftResult] = await Promise.all([
           supabase
             .from('businesses')
             .select('id')
@@ -439,6 +510,11 @@ const OnboardingPage = () => {
                 .limit(1)
                 .maybeSingle()
             : Promise.resolve({ data: null }),
+          supabase
+            .from('onboarding_drafts')
+            .select('current_phase, form_data')
+            .eq('user_id', user.id)
+            .maybeSingle(),
         ]);
 
         if (cancelled) return;
@@ -465,6 +541,17 @@ const OnboardingPage = () => {
         } else {
           hydrateFromCachedLead();
         }
+
+        if (draftResult.error && !isMissingOnboardingDraftsTable(draftResult.error)) {
+          throw draftResult.error;
+        }
+
+        if (draftResult.data) {
+          applyDraft(draftResult.data.current_phase, draftResult.data.form_data as DraftFormData);
+        } else {
+          const localDraft = readLocalDraft();
+          if (localDraft) applyDraft(localDraft.phase, localDraft.formData);
+        }
       } finally {
         if (!cancelled) setHydrating(false);
       }
@@ -480,6 +567,87 @@ const OnboardingPage = () => {
   useEffect(() => {
     if (user?.email && !email) setEmail(user.email);
   }, [user, email]);
+
+  useEffect(() => {
+    if (hydrating) return;
+
+    const formData: DraftFormData = {
+      selectedGoals,
+      firstName,
+      lastName,
+      email,
+      phone,
+      businessName,
+      website,
+      noWebsite,
+      creditScore,
+      revenue,
+      timeInBusiness,
+      bizDescription,
+      bizLocation,
+      bizStage,
+      profitable,
+      financials,
+      cashflow,
+      customers,
+      revenueModel,
+      bottleneck,
+      fundingPurposes,
+      fundingTimeline,
+    };
+
+    try {
+      sessionStorage.setItem('onboardingSnapshot', JSON.stringify({ phase, formData }));
+      sessionStorage.setItem('onboardingSnapshotKey', user?.id || email || 'guest');
+    } catch {
+      // ignore storage failures
+    }
+
+    if (!user?.id) return;
+
+    const timeoutId = window.setTimeout(() => {
+      void supabase
+        .from('onboarding_drafts')
+        .upsert({
+          user_id: user.id,
+          current_phase: phase,
+          form_data: toJson(formData),
+        }, { onConflict: 'user_id' })
+        .then(({ error: draftError }) => {
+          if (draftError && !isMissingOnboardingDraftsTable(draftError)) {
+            console.error('Failed to save onboarding draft', draftError);
+          }
+        });
+    }, 500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    hydrating,
+    user?.id,
+    phase,
+    selectedGoals,
+    firstName,
+    lastName,
+    email,
+    phone,
+    businessName,
+    website,
+    noWebsite,
+    creditScore,
+    revenue,
+    timeInBusiness,
+    bizDescription,
+    bizLocation,
+    bizStage,
+    profitable,
+    financials,
+    cashflow,
+    customers,
+    revenueModel,
+    bottleneck,
+    fundingPurposes,
+    fundingTimeline,
+  ]);
 
   const fundabilityScore = useMemo(() => {
     const cs = creditScoreOptions.find(o => o.value === creditScore)?.points || 0;
@@ -605,6 +773,23 @@ const OnboardingPage = () => {
         .upsert(questionnairePayload, { onConflict: 'user_id' });
       if (questionnaireError && !isMissingQuestionnaireResultsTable(questionnaireError)) {
         throw questionnaireError;
+      }
+
+      if (targetUserId) {
+        const { error: draftDeleteError } = await supabase
+          .from('onboarding_drafts')
+          .delete()
+          .eq('user_id', targetUserId);
+        if (draftDeleteError && !isMissingOnboardingDraftsTable(draftDeleteError)) {
+          throw draftDeleteError;
+        }
+      }
+
+      try {
+        sessionStorage.removeItem('onboardingSnapshot');
+        sessionStorage.removeItem('onboardingSnapshotKey');
+      } catch {
+        // ignore storage cleanup failures
       }
 
       navigate('/client-dashboard', { replace: true });

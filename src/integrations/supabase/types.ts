@@ -95,6 +95,53 @@ export type Database = {
         }
         Relationships: []
       }
+      business_agent_subscriptions: {
+        Row: {
+          active: boolean
+          agent_type: string
+          business_id: string
+          dummy_payment_success: boolean
+          id: string
+          price_monthly: number
+          status: string
+          subscribed_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          agent_type: string
+          business_id: string
+          dummy_payment_success?: boolean
+          id?: string
+          price_monthly?: number
+          status?: string
+          subscribed_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          agent_type?: string
+          business_id?: string
+          dummy_payment_success?: boolean
+          id?: string
+          price_monthly?: number
+          status?: string
+          subscribed_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_agent_subscriptions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checklist_submissions: {
         Row: {
           business_id: string
@@ -355,6 +402,33 @@ export type Database = {
           twilio_account_sid?: string | null
           twilio_auth_token?: string | null
           twilio_from_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onboarding_drafts: {
+        Row: {
+          created_at: string
+          current_phase: string
+          form_data: Json
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_phase: string
+          form_data?: Json
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_phase?: string
+          form_data?: Json
+          id?: string
           updated_at?: string
           user_id?: string
         }

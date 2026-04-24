@@ -150,6 +150,37 @@ serve(async (req) => {
       });
     }
 
+    const { data: roleRows } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+
+    const isAdmin = !!roleRows?.some((row) => row.role === "admin");
+
+    if (!isAdmin) {
+      const { data: subscription, error: subscriptionError } = await supabase
+        .from("business_agent_subscriptions")
+        .select("id")
+        .eq("business_id", businessId)
+        .eq("user_id", user.id)
+        .eq("agent_type", agentType)
+        .eq("active", true)
+        .eq("status", "active")
+        .maybeSingle();
+
+      if (subscriptionError) {
+        return new Response(JSON.stringify({ error: "Agent subscriptions table is not ready yet. Apply the latest database migration and try again." }), {
+          status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (!subscription) {
+        return new Response(JSON.stringify({ error: "Agent not hired yet" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const checklist = business.checklist as Array<{ label: string; complete: boolean }>;
     const completed = checklist.filter((c) => c.complete).map((c) => c.label);
     const missing = checklist.filter((c) => !c.complete).map((c) => c.label);
