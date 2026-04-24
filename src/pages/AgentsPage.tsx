@@ -131,7 +131,7 @@ const AgentsPage = () => {
     } catch (e: any) {
       const message = e?.message || 'Failed to run agent';
       if (typeof message === 'string' && message.toLowerCase().includes('not hired')) {
-        setAnalysis('This agent is not hired for the selected business yet. Complete the dummy subscription first, then run the agent again.');
+        setAnalysis('This agent is not hired for the selected business yet. Complete payment first, then run the agent again.');
       } else {
         setAnalysis(`Error: ${message}`);
       }
@@ -237,7 +237,7 @@ const AgentsPage = () => {
                   }`}>{a.name}</div>
                   <div className="text-[10px] text-muted-foreground leading-relaxed">{a.desc}</div>
                   {isClient && !hired && (
-                    <div className="mt-3 text-[10px] font-semibold text-amber-400">$89/mo dummy subscription required</div>
+                    <div className="mt-3 text-[10px] font-semibold text-amber-400">$89/mo subscription required</div>
                   )}
                 </button>
               );

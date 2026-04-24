@@ -28,7 +28,7 @@ const AgentHireDialog = ({
       <DialogHeader>
         <DialogTitle>Hire {agentName}</DialogTitle>
         <DialogDescription>
-          This is a simple dummy subscription flow. No real payment will be processed.
+          Subscribe to activate this agent for your business.
         </DialogDescription>
       </DialogHeader>
 
@@ -39,7 +39,7 @@ const AgentHireDialog = ({
           <span className="pb-1 text-sm text-muted-foreground">/ month</span>
         </div>
         <p className="mt-3 text-sm text-muted-foreground">
-          Click pay to hire this agent instantly. We will mark the payment as successful and activate the agent right away.
+          Complete payment to hire this agent instantly and activate it right away.
         </p>
       </div>
 
@@ -49,7 +49,7 @@ const AgentHireDialog = ({
           What happens next
         </div>
         <p className="mt-2 text-muted-foreground">
-          The agent will be hired for this business, the dummy payment will show as successful, and the client can start using the agent immediately.
+          The agent will be hired for this business and ready to use immediately after payment is confirmed.
         </p>
       </div>
 
