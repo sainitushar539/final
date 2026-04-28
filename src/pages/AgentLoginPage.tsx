@@ -59,8 +59,8 @@ const AgentLoginPage = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-[hsl(220,40%,8%)] to-[hsl(240,35%,12%)] flex items-center justify-center px-5 py-8 overflow-auto">
-      <form onSubmit={handleSubmit} className="animate-fade-up bg-[hsl(220,30%,14%)] border border-[hsl(40,40%,40%)/0.3] rounded-2xl shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] p-6 md:p-8 w-full max-w-[420px]">
+    <div className="fixed inset-0 bg-gradient-to-br from-[hsl(220,40%,8%)] to-[hsl(240,35%,12%)] flex items-center justify-center px-4 sm:px-5 py-5 sm:py-8 overflow-auto">
+      <form onSubmit={handleSubmit} className="animate-fade-up bg-[hsl(220,30%,14%)] border border-[hsl(40,40%,40%)/0.3] rounded-2xl shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] p-5 sm:p-6 md:p-8 w-full max-w-[420px]">
         <Link to="/" className="no-underline flex items-center gap-2.5 mb-6">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[hsl(40,80%,55%)] to-[hsl(40,70%,45%)] flex items-center justify-center shadow-md">
             <Shield className="w-4 h-4 text-[hsl(220,40%,10%)]" />
@@ -115,7 +115,7 @@ const AgentLoginPage = () => {
 
         {error && <p className="text-xs text-[hsl(0,80%,65%)] text-center mt-3 bg-[hsl(0,80%,55%)/0.1] rounded-xl px-3 py-2.5 border border-[hsl(0,80%,55%)/0.2]">{error}</p>}
 
-        <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-center gap-4">
+        <div className="mt-5 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <Link to="/" className="text-[11px] text-white/50 hover:text-white no-underline">
             Back to Home
           </Link>

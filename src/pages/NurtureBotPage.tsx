@@ -139,12 +139,12 @@ const NurtureBotPage = () => {
   ];
 
   return (
-    <div className="animate-fade-up flex gap-4 h-[calc(100vh-140px)]">
-      <div className="w-72 flex-shrink-0 bg-card border border-border rounded-xl overflow-hidden flex flex-col">
-        <div className="px-4 py-3 bg-background border-b border-border">
+    <div className="animate-fade-up flex h-auto min-h-[calc(100vh-140px)] flex-col gap-4 lg:h-[calc(100vh-140px)] lg:flex-row">
+      <div className="flex max-h-[42vh] min-h-[260px] w-full flex-col overflow-hidden rounded-xl border border-border bg-card lg:max-h-none lg:min-h-0 lg:w-72 lg:flex-shrink-0">
+        <div className="border-b border-border bg-background px-4 py-3">
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-primary" />
-            <span className="text-[9px] font-bold tracking-[2px] uppercase text-primary font-mono">Select Lead</span>
+            <Users className="h-4 w-4 text-primary" />
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[2px] text-primary">Select Lead</span>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto">
@@ -152,40 +152,40 @@ const NurtureBotPage = () => {
             <button
               key={lead.id}
               onClick={() => selectLead(lead)}
-              className={`w-full text-left px-4 py-3 border-b border-border/40 cursor-pointer transition-all bg-transparent border-none ${
+              className={`w-full border-none border-b border-border/40 bg-transparent px-4 py-3 text-left transition-all ${
                 selectedLead?.id === lead.id ? 'bg-primary/[0.08]' : 'hover:bg-secondary/50'
               }`}
             >
               <div className="text-xs font-bold text-foreground">{lead.contact_name}</div>
               <div className="text-[10px] text-muted-foreground">{lead.company_name}</div>
-              <div className="text-[9px] text-primary/70 mt-0.5 capitalize">{lead.status || 'new'}</div>
+              <div className="mt-0.5 text-[9px] capitalize text-primary/70">{lead.status || 'new'}</div>
             </button>
           ))}
           {leads.length === 0 && (
-            <div className="p-4 text-center text-muted-foreground text-xs">No leads yet</div>
+            <div className="p-4 text-center text-xs text-muted-foreground">No leads yet</div>
           )}
         </div>
       </div>
 
-      <div className="flex-1 bg-card border border-border rounded-xl overflow-hidden flex flex-col">
-        <div className="px-4 py-3 bg-background border-b border-border flex items-center gap-2">
-          <Bot className="w-4 h-4 text-primary" />
-          <span className="text-[9px] font-bold tracking-[2px] uppercase text-primary font-mono">
-            Nurture Bot {selectedLead ? `— ${selectedLead.contact_name}` : ''}
+      <div className="flex min-h-[460px] min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card">
+        <div className="flex items-center gap-2 border-b border-border bg-background px-4 py-3">
+          <Bot className="h-4 w-4 text-primary" />
+          <span className="min-w-0 truncate font-mono text-[9px] font-bold uppercase tracking-[2px] text-primary sm:text-[10px]">
+            Nurture Bot {selectedLead ? `- ${selectedLead.contact_name}` : ''}
           </span>
         </div>
 
         {!selectedLead ? (
-          <div className="flex-1 flex items-center justify-center p-6">
-            <div className="text-center">
-              <Bot className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-              <h3 className="text-foreground font-semibold mb-1">Select a Lead</h3>
+          <div className="flex flex-1 items-center justify-center p-6">
+            <div className="max-w-[240px] text-center">
+              <Bot className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
+              <h3 className="mb-1 text-foreground font-semibold">Select a Lead</h3>
               <p className="text-sm text-muted-foreground">Choose a lead from the list to start crafting personalized outreach</p>
             </div>
           </div>
         ) : (
           <>
-            <div className="px-4 py-2 border-b border-border/50 flex gap-2 flex-wrap">
+            <div className="flex gap-2 overflow-x-auto border-b border-border/50 px-4 py-2 sm:flex-wrap">
               {quickActions.map((qa, i) => (
                 <button
                   key={i}
@@ -193,23 +193,24 @@ const NurtureBotPage = () => {
                     setInput(qa.prompt);
                     void sendMessage(qa.prompt);
                   }}
-                  className="text-[10px] bg-primary/[0.06] text-primary border border-primary/20 px-3 py-1.5 rounded-full cursor-pointer hover:bg-primary/10 transition-colors font-medium"
+                  className="shrink-0 rounded-full border border-primary/20 bg-primary/[0.06] px-3 py-1.5 text-[10px] font-medium text-primary transition-colors hover:bg-primary/10"
                 >
-                  <Zap className="w-3 h-3 inline mr-1" />{qa.label}
+                  <Zap className="mr-1 inline h-3 w-3" />
+                  {qa.label}
                 </button>
               ))}
             </div>
 
-            <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div ref={chatRef} className="flex-1 space-y-4 overflow-y-auto p-3 sm:p-4">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                  <div className={`max-w-[92%] rounded-2xl px-4 py-3 text-sm sm:max-w-[80%] ${
                     msg.role === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-foreground'
                   }`}>
                     {msg.role === 'assistant' ? (
-                      <div className="prose prose-sm max-w-none [&_p]:text-foreground [&_li]:text-foreground [&_strong]:text-foreground [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground">
+                      <div className="prose prose-sm max-w-none [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_li]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     ) : msg.content}
@@ -218,28 +219,28 @@ const NurtureBotPage = () => {
               ))}
               {generating && (
                 <div className="flex justify-start">
-                  <div className="bg-secondary rounded-2xl px-4 py-3 text-sm text-muted-foreground animate-pulse">
+                  <div className="animate-pulse rounded-2xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
                     Thinking...
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="p-4 border-t border-border flex gap-2">
+            <div className="flex flex-col gap-2 border-t border-border p-3 sm:flex-row sm:p-4">
               <input
                 type="text"
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && sendMessage()}
                 placeholder="Ask about this lead or request content..."
-                className="flex-1 bg-secondary border border-border text-foreground text-sm px-4 py-2.5 rounded-xl outline-none focus:border-primary transition-colors"
+                className="min-w-0 flex-1 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary"
               />
               <button
                 onClick={sendMessage}
                 disabled={generating || !input.trim()}
-                className="bg-primary text-primary-foreground border-none px-4 py-2.5 rounded-xl cursor-pointer disabled:opacity-50 transition-all hover:brightness-110"
+                className="flex items-center justify-center rounded-xl border-none bg-primary px-4 py-2.5 text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50 sm:w-auto"
               >
-                <Send className="w-4 h-4" />
+                <Send className="h-4 w-4" />
               </button>
             </div>
           </>

@@ -1,10 +1,13 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { Brain, LayoutDashboard, Bot, Settings, LogOut, Sparkles } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Brain, LayoutDashboard, Bot, Settings, LogOut, Sparkles, X } from 'lucide-react';
 
 interface Props {
   activePage: string;
   onNavigate: (page: string) => void;
   onSignOut?: () => void;
+  onCloseMobile?: () => void;
+  mobileOpen?: boolean;
 }
 
 const navItems = [
@@ -17,13 +20,16 @@ const navItems = [
   ]},
 ];
 
-const ClientSidebar = ({ activePage, onNavigate, onSignOut }: Props) => {
+const ClientSidebar = ({ activePage, onNavigate, onSignOut, onCloseMobile, mobileOpen = false }: Props) => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <aside className="w-[260px] bg-background border-r border-border fixed top-0 left-0 bottom-0 flex flex-col z-[100]">
+    <aside className={`fixed top-0 left-0 bottom-0 z-[100] flex w-[260px] max-w-[calc(100vw-3rem)] flex-col border-r border-border bg-background transition-transform duration-300 ${
+      isMobile ? (mobileOpen ? 'translate-x-0' : '-translate-x-full') : ''
+    }`}>
       <div className="px-5 pt-5 pb-4 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[hsl(230,80%,56%)] to-[hsl(260,70%,60%)] flex items-center justify-center shadow-md">
@@ -37,6 +43,15 @@ const ClientSidebar = ({ activePage, onNavigate, onSignOut }: Props) => {
               Client Portal
             </div>
           </div>
+          {isMobile && onCloseMobile && (
+            <button
+              onClick={onCloseMobile}
+              className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground transition hover:text-foreground lg:hidden"
+              aria-label="Close sidebar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 

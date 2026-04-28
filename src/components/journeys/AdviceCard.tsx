@@ -8,9 +8,12 @@ interface AdviceCardProps {
   error: string;
   onRetry?: () => void;
   loadingText?: string;
+  scoreValue?: number;
+  scoreLabel?: string;
+  scoreCaption?: string;
 }
 
-const AdviceCard = ({ advice, loading, error, onRetry, loadingText }: AdviceCardProps) => {
+const AdviceCard = ({ advice, loading, error, onRetry, loadingText, scoreValue, scoreLabel, scoreCaption }: AdviceCardProps) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -62,6 +65,9 @@ const AdviceCard = ({ advice, loading, error, onRetry, loadingText }: AdviceCard
           title="AI Consultant Report"
           subtitle="A premium strategy dashboard translating the AI response into executive priorities, opportunities, and next actions."
           loadingText={loadingText}
+          scoreValue={scoreValue}
+          scoreLabel={scoreLabel}
+          scoreCaption={scoreCaption}
         />
       )}
     </>

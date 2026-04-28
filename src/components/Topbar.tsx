@@ -43,8 +43,8 @@ const Topbar = ({ title, subtitle, onLoanQueue, onMenuToggle, variant = 'admin' 
   };
 
   return (
-    <header className={`sticky top-0 z-50 flex items-center justify-between px-4 py-3 md:px-7 border-b ${isAdmin ? 'border-[#1A2233] bg-[#0B0F19]' : 'border-[hsl(var(--border))] bg-white/90 backdrop-blur-xl'}`}>
-      <div className="flex min-w-0 items-center gap-3">
+    <header className={`sticky top-0 z-50 flex items-center justify-between gap-3 px-3 py-3 sm:px-4 md:px-7 border-b ${isAdmin ? 'border-[#1A2233] bg-[#0B0F19]' : 'border-[hsl(var(--border))] bg-white/90 backdrop-blur-xl'}`}>
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {onMenuToggle && (
           <button onClick={onMenuToggle} className={`rounded-md p-2 transition-colors ${isAdmin ? 'text-[#9CA3AF] hover:bg-[#111827] hover:text-[#E5E7EB]' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'}`} aria-label="Toggle menu">
             <Menu className="h-5 w-5" />
@@ -57,7 +57,7 @@ const Topbar = ({ title, subtitle, onLoanQueue, onMenuToggle, variant = 'admin' 
         </Link>
         <div className="min-w-0">
           <h1 className={`truncate text-sm font-semibold tracking-tight md:text-base ${isAdmin ? 'text-[#E5E7EB]' : 'text-slate-900'}`}>{title}</h1>
-          {subtitle && <p className={`mt-0.5 truncate text-[11px] ${isAdmin ? 'text-[#9CA3AF]' : 'text-slate-500'}`}>{subtitle}</p>}
+          {subtitle && <p className={`mt-0.5 hidden truncate text-[11px] sm:block ${isAdmin ? 'text-[#9CA3AF]' : 'text-slate-500'}`}>{subtitle}</p>}
         </div>
       </div>
 
@@ -72,16 +72,16 @@ const Topbar = ({ title, subtitle, onLoanQueue, onMenuToggle, variant = 'admin' 
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex shrink-0 items-center gap-2 md:gap-3">
         {onLoanQueue && (
           <button
             onClick={onLoanQueue}
-            className={`cursor-pointer rounded-md px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] transition-all active:scale-[0.99] ${isAdmin ? 'border border-[#D4AF37]/30 bg-[#D4AF37] text-[#0B0F19] hover:bg-[#C9A633]' : 'border border-primary/20 bg-primary text-primary-foreground hover:brightness-110'}`}
+            className={`hidden cursor-pointer rounded-md px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] transition-all active:scale-[0.99] md:inline-flex ${isAdmin ? 'border border-[#D4AF37]/30 bg-[#D4AF37] text-[#0B0F19] hover:bg-[#C9A633]' : 'border border-primary/20 bg-primary text-primary-foreground hover:brightness-110'}`}
           >
             Review Loans
           </button>
         )}
-        <button className={`relative h-10 w-10 rounded-md border transition ${isAdmin ? 'border-[#1A2233] bg-[#111827] text-[#9CA3AF] hover:border-[#D4AF37]/25 hover:text-[#E5E7EB]' : 'border-slate-200 bg-white text-slate-500 hover:border-primary/25 hover:text-slate-900'}`} aria-label="Notifications">
+        <button className={`relative hidden h-10 w-10 rounded-md border transition sm:block ${isAdmin ? 'border-[#1A2233] bg-[#111827] text-[#9CA3AF] hover:border-[#D4AF37]/25 hover:text-[#E5E7EB]' : 'border-slate-200 bg-white text-slate-500 hover:border-primary/25 hover:text-slate-900'}`} aria-label="Notifications">
           <Bell className="m-auto h-4 w-4" />
           <span className={`absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full ${isAdmin ? 'bg-[#D4AF37]' : 'bg-primary'}`} />
         </button>
@@ -93,7 +93,7 @@ const Topbar = ({ title, subtitle, onLoanQueue, onMenuToggle, variant = 'admin' 
             className={`flex h-10 items-center gap-2 rounded-md border px-2.5 text-left transition ${isAdmin ? 'border-[#1A2233] bg-[#111827] hover:border-[#D4AF37]/25' : 'border-slate-200 bg-white hover:border-primary/25'}`}
           >
             <span className={`flex h-7 w-7 items-center justify-center rounded-sm text-[10px] font-bold ${isAdmin ? 'bg-[#1A2233] text-[#E5E7EB]' : 'bg-slate-100 text-slate-700'}`}>{initials}</span>
-            <span className={`hidden max-w-[120px] truncate text-xs font-medium md:inline ${isAdmin ? 'text-[#E5E7EB]' : 'text-slate-900'}`}>{displayName}</span>
+            <span className={`hidden max-w-[120px] truncate text-xs font-medium lg:inline ${isAdmin ? 'text-[#E5E7EB]' : 'text-slate-900'}`}>{displayName}</span>
             <ChevronDown className={`h-3.5 w-3.5 transition-transform ${profileOpen ? 'rotate-180' : ''} ${isAdmin ? 'text-[#5F6B7D]' : 'text-slate-400'}`} />
           </button>
 

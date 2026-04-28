@@ -90,6 +90,20 @@ const DashboardLayout = () => {
     return () => window.removeEventListener('admin:navigate', handler as EventListener);
   }, []);
 
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarCollapsed(false);
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    document.body.style.overflow = sidebarOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobile, sidebarOpen]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -150,11 +164,11 @@ const DashboardLayout = () => {
     >
       {/* Mobile overlay */}
       {isMobile && sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-[99] md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-[99] md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
-      <div className={`${isMobile ? `fixed z-[100] transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}` : ''}`}>
+      <div className={`${isMobile ? 'fixed z-[100] h-screen max-h-screen' : ''}`}>
         {isAdmin ? (
           <Sidebar
             activePage={activePage}
@@ -162,14 +176,22 @@ const DashboardLayout = () => {
             onSignOut={handleSignOut}
             collapsed={sidebarCollapsed}
             onToggleCollapsed={() => setSidebarCollapsed((value) => !value)}
+            onCloseMobile={() => setSidebarOpen(false)}
+            mobileOpen={sidebarOpen}
           />
         ) : (
-          <ClientSidebar activePage={activePage} onNavigate={handleNavigate} onSignOut={handleSignOut} />
+          <ClientSidebar
+            activePage={activePage}
+            onNavigate={handleNavigate}
+            onSignOut={handleSignOut}
+            onCloseMobile={() => setSidebarOpen(false)}
+            mobileOpen={sidebarOpen}
+          />
         )}
       </div>
 
       <div
-        className={`${isMobile ? 'w-full' : ''} flex-1 min-h-screen flex flex-col transition-[margin] duration-200`}
+        className={`${isMobile ? 'w-full min-w-0' : ''} flex-1 min-h-screen flex flex-col transition-[margin] duration-200`}
         style={!isMobile && isAdmin ? { marginLeft: sidebarWidth } : !isMobile ? { marginLeft: 260 } : undefined}
       >
         <Topbar
@@ -179,7 +201,7 @@ const DashboardLayout = () => {
           onMenuToggle={isMobile ? () => setSidebarOpen(!sidebarOpen) : undefined}
           variant={isAdmin ? 'admin' : 'client'}
         />
-        <main className={`${isAdmin ? 'p-5 md:p-7' : 'p-4 md:p-6'} flex-1 overflow-x-hidden`}>
+        <main className={`${isAdmin ? 'p-3 sm:p-4 md:p-7' : 'p-4 md:p-6'} flex-1 overflow-x-hidden`}>
           {isAdmin ? (
             <>
               {activePage === 'dashboard' && <DashboardPage onNavigate={handleNavigate} />}

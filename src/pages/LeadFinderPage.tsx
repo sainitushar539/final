@@ -201,40 +201,81 @@ const LeadFinderPage = () => {
         ) : matched.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground text-sm">No leads found</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  {['Contact', 'Company', 'Priority', 'Agent', 'Status', 'Created'].map(h => (
-                    <th key={h} className="bg-secondary/50 text-muted-foreground text-[8px] font-bold tracking-[2px] uppercase px-3 py-2.5 text-left border-b border-border font-mono">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {matched.map(lead => (
-                  <tr key={lead.id} className="hover:bg-secondary/30 transition-colors">
-                    <td className="px-3 py-2.5 border-b border-border/40">
-                      <div className="text-xs font-bold text-foreground">{lead.contact_name}</div>
-                      <div className="text-[10px] text-muted-foreground">{lead.email}</div>
-                    </td>
-                    <td className="px-3 py-2.5 text-xs text-foreground/70 border-b border-border/40">{lead.company_name}</td>
-                    <td className="px-3 py-2.5 border-b border-border/40">
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border ${priorityOf(lead) === 'high' ? 'bg-[#FFFAEB] text-[#B45309] border-[#FCD34D]' : priorityOf(lead) === 'medium' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground border-border'}`}>
-                        {priorityOf(lead)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-[10px] text-foreground/70 border-b border-border/40">{getAgent(lead)}</td>
-                    <td className="px-3 py-2.5 border-b border-border/40">
-                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border bg-info/10 text-info border-info/20">
-                        {lead.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-[10px] text-muted-foreground font-mono border-b border-border/40">{new Date(lead.created_at).toLocaleDateString()}</td>
+          <>
+            <div className="space-y-3 p-3 md:hidden">
+              {matched.map(lead => (
+                <div key={lead.id} className="rounded-xl border border-border bg-background/40 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-foreground break-words">{lead.contact_name}</div>
+                      <div className="text-[11px] text-muted-foreground break-all">{lead.email}</div>
+                    </div>
+                    <span className={`shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border ${priorityOf(lead) === 'high' ? 'bg-[#FFFAEB] text-[#B45309] border-[#FCD34D]' : priorityOf(lead) === 'medium' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground border-border'}`}>
+                      {priorityOf(lead)}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[1.5px] text-muted-foreground">Company</div>
+                      <div className="mt-1 text-xs text-foreground/80 break-words">{lead.company_name}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[1.5px] text-muted-foreground">Agent</div>
+                      <div className="mt-1 text-xs text-foreground/80 break-words">{getAgent(lead)}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[1.5px] text-muted-foreground">Status</div>
+                      <div className="mt-1">
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border bg-info/10 text-info border-info/20">
+                          {lead.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[1.5px] text-muted-foreground">Created</div>
+                      <div className="mt-1 text-[11px] text-muted-foreground font-mono">{new Date(lead.created_at).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    {['Contact', 'Company', 'Priority', 'Agent', 'Status', 'Created'].map(h => (
+                      <th key={h} className="bg-secondary/50 text-muted-foreground text-[8px] font-bold tracking-[2px] uppercase px-3 py-2.5 text-left border-b border-border font-mono">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {matched.map(lead => (
+                    <tr key={lead.id} className="hover:bg-secondary/30 transition-colors">
+                      <td className="px-3 py-2.5 border-b border-border/40">
+                        <div className="text-xs font-bold text-foreground">{lead.contact_name}</div>
+                        <div className="text-[10px] text-muted-foreground">{lead.email}</div>
+                      </td>
+                      <td className="px-3 py-2.5 text-xs text-foreground/70 border-b border-border/40">{lead.company_name}</td>
+                      <td className="px-3 py-2.5 border-b border-border/40">
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border ${priorityOf(lead) === 'high' ? 'bg-[#FFFAEB] text-[#B45309] border-[#FCD34D]' : priorityOf(lead) === 'medium' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground border-border'}`}>
+                          {priorityOf(lead)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5 text-[10px] text-foreground/70 border-b border-border/40">{getAgent(lead)}</td>
+                      <td className="px-3 py-2.5 border-b border-border/40">
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border bg-info/10 text-info border-info/20">
+                          {lead.status}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5 text-[10px] text-muted-foreground font-mono border-b border-border/40">{new Date(lead.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 

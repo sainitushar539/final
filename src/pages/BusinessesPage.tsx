@@ -84,8 +84,8 @@ const BusinessesPage = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> Live
             </span>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+          <div className="hide-scrollbar overflow-x-auto">
+            <table className="w-full min-w-[640px] border-collapse">
               <thead>
                 <tr>
                   {['Business', 'Industry', 'Score', 'Status', 'Capital Need', 'Created'].map(h => (
@@ -119,8 +119,8 @@ const BusinessesPage = () => {
           </span>
           <span className="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">{businesses.length} Businesses</span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+        <div className="hide-scrollbar overflow-x-auto">
+          <table className="w-full min-w-[920px] border-collapse">
             <thead>
               <tr>
                 {['Business', 'Industry', 'Score', 'Status', 'Checklist', 'Top Blocking Gap', 'Capital Need', 'Action'].map(h => (
@@ -166,7 +166,7 @@ const BusinessesPage = () => {
       <div className="text-xs text-muted-foreground mb-3">
         Businesses sorted by fundability stage — click any card to view their checklist and gaps
       </div>
-      <div className="grid grid-cols-5 gap-3 max-lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-5">
         {stages.map(stage => {
           const items = businesses.filter(b => b.status === stage.key);
           return (

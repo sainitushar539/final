@@ -100,8 +100,8 @@ const DashboardPage = ({ onNavigate }: Props) => {
     <div className="animate-fade-up space-y-4">
       {/* Alert */}
       <div className="bg-primary/[0.06] border border-primary/15 rounded-xl px-4 py-3 text-xs text-foreground/70 leading-relaxed">
-        <strong className="text-primary">⚡ 3 Actions Required:</strong>{' '}
-        <span className="hidden sm:inline">Williams Catering reached score 78 — ready for capital approval. Park Tech Solutions loan package is complete. Johnson & Sons is missing 2 documents.</span>
+        <strong className="text-primary">3 Actions Required:</strong>{' '}
+        <span className="hidden sm:inline">Williams Catering reached score 78 - ready for capital approval. Park Tech Solutions loan package is complete. Johnson & Sons is missing 2 documents.</span>
         <span className="sm:hidden">Williams Catering ready for approval. 2 more items need attention.</span>
       </div>
 
@@ -212,24 +212,24 @@ const DashboardPage = ({ onNavigate }: Props) => {
       {!loaded && (
         <div className="flex justify-center py-6">
           <button onClick={() => setLoaded(true)} className="bg-gradient-to-r from-primary to-[hsl(260,70%,60%)] text-white border-none text-xs font-bold px-6 py-3 cursor-pointer rounded-xl transition-all hover:shadow-md hover:-translate-y-0.5">
-            ▶ Load Portfolio Data
+            Load Portfolio Data
           </button>
         </div>
       )}
 
       {loaded && (
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
+        <div className="grid grid-cols-1 gap-4 2xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
           {/* Left column */}
           <div className="space-y-4">
             {/* Portfolio Table */}
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="px-4 py-3 border-b border-border flex justify-between items-center">
-                <span className="text-xs font-bold text-primary">📋 Business Portfolio</span>
+                <span className="text-xs font-bold text-primary">Business Portfolio</span>
                 <span className="text-xs text-muted-foreground cursor-pointer hover:text-primary transition-colors" onClick={() => onNavigate('businesses')}>
-                  View All →
+                  View All
                 </span>
               </div>
-              <div className="overflow-x-auto">
+              <div className="hide-scrollbar overflow-x-auto">
                 <table className="w-full border-collapse min-w-[600px]">
                   <thead>
                     <tr>
@@ -265,7 +265,7 @@ const DashboardPage = ({ onNavigate }: Props) => {
             {/* Checklist */}
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
-                <span className="text-xs font-bold text-primary">✅ Checklist Tracker</span>
+                <span className="text-xs font-bold text-primary">Checklist Tracker</span>
               </div>
               {businesses.filter(b => b.status !== 'funded').slice(0, 5).map(biz => {
                 const done = biz.checklist.filter(c => c.complete).length;
@@ -301,7 +301,7 @@ const DashboardPage = ({ onNavigate }: Props) => {
             {/* Loan Queue */}
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="px-4 py-3 border-b border-border flex justify-between items-center">
-                <span className="text-xs font-bold text-primary">🏦 Loan Queue</span>
+                <span className="text-xs font-bold text-primary">Loan Queue</span>
                 <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">3 Pending</span>
               </div>
               {loanQueue.map(biz => (
@@ -313,9 +313,9 @@ const DashboardPage = ({ onNavigate }: Props) => {
                     <div className={`h-full rounded-full ${biz.score >= 75 ? 'bg-[hsl(var(--success))]' : 'bg-[hsl(var(--warning))]'}`} style={{ width: `${biz.score}%` }} />
                   </div>
                   <div className="flex justify-between text-[10px]">
-                    <span className="text-muted-foreground">{biz.score >= 75 ? 'Package: Complete ✓' : 'Missing docs'}</span>
+                    <span className="text-muted-foreground">{biz.score >= 75 ? 'Package: Complete' : 'Missing docs'}</span>
                     <span className={`font-bold ${biz.score >= 75 ? 'text-[hsl(var(--success))]' : 'text-primary'}`}>
-                      {biz.score >= 75 ? 'APPROVE →' : 'TRACK →'}
+                      {biz.score >= 75 ? 'APPROVE ->' : 'TRACK ->'}
                     </span>
                   </div>
                 </div>
@@ -325,7 +325,7 @@ const DashboardPage = ({ onNavigate }: Props) => {
             {/* Revenue */}
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
-                <span className="text-xs font-bold text-primary">💰 Revenue — This Month</span>
+                <span className="text-xs font-bold text-primary">Revenue - This Month</span>
               </div>
               {[
                 { label: 'Origination Fees', value: '$12,400' },
@@ -347,7 +347,7 @@ const DashboardPage = ({ onNavigate }: Props) => {
             {/* Activity */}
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="px-4 py-3 border-b border-border flex justify-between items-center">
-                <span className="text-xs font-bold text-primary">⚡ Activity</span>
+                <span className="text-xs font-bold text-primary">Activity</span>
                 <span className="text-[9px] text-[hsl(var(--success))] font-bold flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-[hsl(var(--success))] rounded-full animate-pulse" />
                   LIVE
@@ -356,7 +356,7 @@ const DashboardPage = ({ onNavigate }: Props) => {
               {[
                 { text: 'Williams Catering scored 78 — capital ready', time: '4m', color: 'bg-[hsl(var(--success))]' },
                 { text: 'Missing operating agreement for Johnson & Sons', time: '9m', color: 'bg-destructive' },
-                { text: 'Sunrise Daycare score improved 64→71', time: '22m', color: 'bg-primary' },
+                { text: 'Sunrise Daycare score improved 64 to 71', time: '22m', color: 'bg-primary' },
                 { text: '3 intake forms submitted overnight', time: '6h', color: 'bg-muted-foreground' },
               ].map((a, i) => (
                 <div key={i} className="px-4 py-2.5 border-b border-border/30 flex gap-2.5 last:border-b-0">

@@ -23,7 +23,9 @@ const LandingNav = () => {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [mobileOpen]);
 
   const scrollTo = (id: string) => {
@@ -38,19 +40,17 @@ const LandingNav = () => {
           ? 'bg-background/70 border-b border-white/10 py-2 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)] ring-1 ring-white/5'
           : 'bg-background/55 border-b border-white/10 py-3 shadow-[0_6px_28px_-10px_rgba(0,0,0,0.45)]'
       }`}>
-        {/* Subtle top highlight for glass edge */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        <div className="max-w-7xl mx-auto px-5 md:px-10 flex justify-between items-center">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-[hsl(260,70%,60%)] flex items-center justify-center shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-5 md:px-10 flex justify-between items-center gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-[hsl(260,70%,60%)] flex items-center justify-center shadow-md shrink-0">
               <Brain className="w-4 h-4 text-white" />
             </div>
-            <div className={`text-base font-bold transition-colors ${scrolled ? 'text-foreground' : 'text-foreground'}`}>
+            <div className={`text-sm sm:text-base font-bold transition-colors truncate ${scrolled ? 'text-foreground' : 'text-foreground'}`}>
               Credibility Suite
             </div>
           </div>
 
-          {/* Desktop nav */}
           <div className="hidden min-[900px]:flex items-center gap-0.5">
             {sectionLinks.map(item => (
               <button
@@ -112,7 +112,6 @@ const LandingNav = () => {
             )}
           </div>
 
-          {/* Tablet nav */}
           <div className="hidden md:flex min-[900px]:hidden items-center gap-2">
             {user ? (
               <button
@@ -159,10 +158,13 @@ const LandingNav = () => {
             </button>
           </div>
 
-          {/* Mobile hamburger */}
           <button
-            className={`md:hidden bg-transparent border-none cursor-pointer p-2 rounded-lg transition-colors ${
-              scrolled ? 'text-foreground hover:bg-muted' : 'text-foreground hover:bg-muted'
+            className={`md:hidden shrink-0 cursor-pointer rounded-xl border p-2.5 transition-all ${
+              mobileOpen
+                ? 'border-white/10 bg-[#132238] text-white'
+                : scrolled
+                  ? 'border-border/70 bg-background/60 text-foreground hover:bg-muted'
+                  : 'border-white/10 bg-white/[0.04] text-foreground hover:bg-white/[0.08]'
             }`}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -172,60 +174,61 @@ const LandingNav = () => {
         </div>
       </nav>
 
-      {/* Mobile / tablet menu */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[199] bg-[#0a1628] pt-16 px-5 overflow-y-auto min-[900px]:hidden animate-fade-in">
-          <div className="space-y-1 mb-6 mt-4">
-            <Link
-              to="/about"
-              onClick={() => setMobileOpen(false)}
-              className="block w-full text-left px-3 py-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/[0.08] transition-colors no-underline text-sm"
-            >
-              About
-            </Link>
-
-            {sectionLinks.map(item => (
-              <button
-                key={item.label}
-                onClick={() => scrollTo(item.id)}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/[0.08] transition-colors bg-transparent border-none cursor-pointer text-sm"
+        <div className="fixed inset-0 z-[199] bg-[#0a1628]/96 pt-[5.2rem] px-4 pb-6 overflow-y-auto min-[900px]:hidden animate-fade-in">
+          <div className="mx-auto max-w-md rounded-[26px] border border-white/[0.08] bg-[#132238] p-4 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.82)]">
+            <div className="space-y-1 mb-6">
+              <Link
+                to="/about"
+                onClick={() => setMobileOpen(false)}
+                className="block w-full text-left px-3 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.05] transition-colors no-underline text-sm font-medium"
               >
-                {item.label}
-              </button>
-            ))}
-          </div>
+                About
+              </Link>
 
-          <div className="pb-8">
-            {user ? (
-              <button
-                onClick={() => { setMobileOpen(false); navigate('/client-dashboard'); }}
-                className="w-full bg-gradient-to-r from-primary to-[hsl(260,70%,60%)] text-white font-semibold text-sm py-3.5 rounded-xl border-none cursor-pointer flex items-center justify-center gap-2"
-              >
-                <LayoutDashboard className="w-4 h-4" /> My Dashboard
-              </button>
-            ) : (
-              <div className="space-y-2">
+              {sectionLinks.map(item => (
                 <button
-                  onClick={() => { setMobileOpen(false); navigate('/auth'); }}
-                  className="w-full bg-white/[0.06] text-white font-semibold text-sm py-3.5 rounded-xl border border-white/[0.12] cursor-pointer flex items-center justify-center gap-2"
+                  key={item.label}
+                  onClick={() => scrollTo(item.id)}
+                  className="w-full text-left px-3 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/[0.05] transition-colors bg-transparent border-none cursor-pointer text-sm font-medium"
                 >
-                  <LogIn className="w-4 h-4" /> Client Login
+                  {item.label}
                 </button>
+              ))}
+            </div>
+
+            <div className="pb-1">
+              {user ? (
                 <button
-                  onClick={() => { setMobileOpen(false); navigate('/get-started'); }}
-                  className="w-full bg-gradient-to-r from-primary to-[hsl(260,70%,60%)] text-white font-semibold text-sm py-3.5 rounded-xl border-none cursor-pointer flex items-center justify-center gap-2"
+                  onClick={() => { setMobileOpen(false); navigate('/client-dashboard'); }}
+                  className="w-full bg-gradient-to-r from-primary to-[hsl(260,70%,60%)] text-white font-semibold text-sm py-3.5 rounded-2xl border-none cursor-pointer flex items-center justify-center gap-2 shadow-[0_18px_40px_-26px_rgba(99,102,241,0.95)]"
                 >
-                  Check My Score — Free <ArrowRight className="w-4 h-4" />
+                  <LayoutDashboard className="w-4 h-4" /> My Dashboard
                 </button>
-                <Link
-                  to="/agent-login"
-                  onClick={() => setMobileOpen(false)}
-                  className="w-full text-white/70 hover:text-white font-medium text-xs py-3 rounded-xl border border-dashed border-white/[0.15] cursor-pointer flex items-center justify-center gap-2 no-underline"
-                >
-                  <Shield className="w-3.5 h-3.5" /> Agent Portal
-                </Link>
-              </div>
-            )}
+              ) : (
+                <div className="space-y-2.5">
+                  <button
+                    onClick={() => { setMobileOpen(false); navigate('/auth'); }}
+                    className="w-full bg-[#16263d] text-white font-semibold text-sm py-3.5 rounded-2xl border border-white/[0.10] cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4" /> Client Login
+                  </button>
+                  <button
+                    onClick={() => { setMobileOpen(false); navigate('/get-started'); }}
+                    className="w-full bg-gradient-to-r from-primary to-[hsl(260,70%,60%)] text-white font-semibold text-sm py-3.5 rounded-2xl border-none cursor-pointer flex items-center justify-center gap-2 shadow-[0_18px_40px_-26px_rgba(99,102,241,0.95)]"
+                  >
+                    Check My Score - Free <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <Link
+                    to="/agent-login"
+                    onClick={() => setMobileOpen(false)}
+                    className="w-full bg-transparent text-white hover:text-white font-medium text-xs py-3.5 rounded-2xl border border-dashed border-white/[0.16] cursor-pointer flex items-center justify-center gap-2 no-underline"
+                  >
+                    <Shield className="w-3.5 h-3.5" /> Agent Portal
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -234,4 +237,3 @@ const LandingNav = () => {
 };
 
 export default LandingNav;
-

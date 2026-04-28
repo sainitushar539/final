@@ -332,7 +332,7 @@ const LeadsCRMPage = () => {
 
   return (
     <div className="animate-fade-up space-y-4">
-      <div className="grid grid-cols-5 gap-2 max-lg:grid-cols-3 max-sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-5">
         {leadStatuses.map(status => (
           <button
             key={status}
@@ -453,8 +453,8 @@ const LeadsCRMPage = () => {
         ) : filtered.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground text-sm">No leads found</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+          <div className="hide-scrollbar overflow-x-auto">
+            <table className="w-full min-w-[920px] border-collapse">
               <thead>
                 <tr>
                   {['Contact', 'Company', 'Industry', 'Amount', 'Funnel', 'Status', 'Created', 'Actions'].map(h => (
@@ -528,7 +528,7 @@ const LeadsCRMPage = () => {
                 <span className="text-foreground">{selectedLead.industry || 'No industry specified'}</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
+              <div className="grid grid-cols-1 gap-3 pt-3 border-t border-border sm:grid-cols-2">
                 <div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Credit Score</div>
                   <div className="text-sm font-semibold text-foreground">{selectedLead.credit_score_range || 'N/A'}</div>
@@ -554,7 +554,7 @@ const LeadsCRMPage = () => {
                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Questionnaire Result</div>
                 {selectedQuestionnaire ? (
                   <div className="space-y-3">
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                       <div className="bg-background border border-border rounded-xl p-3">
                         <div className="text-[9px] text-muted-foreground uppercase tracking-wider">Score</div>
                         <div className="text-lg font-bold text-primary">{selectedQuestionnaire.score}</div>
@@ -579,7 +579,7 @@ const LeadsCRMPage = () => {
                     {selectedQuestionnaire.answers && typeof selectedQuestionnaire.answers === 'object' && (
                       <div className="bg-background border border-border rounded-xl p-3">
                         <div className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Saved Answers</div>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                           {Object.entries(selectedQuestionnaire.answers).slice(0, 12).map(([key, value]) => (
                             <div key={key}>
                               <div className="text-[9px] text-muted-foreground uppercase tracking-wider">{key.replace(/([A-Z])/g, ' $1')}</div>
@@ -606,7 +606,7 @@ const LeadsCRMPage = () => {
                   placeholder="Add onboarding or side notes..."
                   className="w-full min-h-20 bg-secondary border border-border rounded-xl px-3 py-2 text-sm text-foreground outline-none focus:border-primary resize-y"
                 />
-                <div className="flex gap-2 mt-2">
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row">
                   <select
                     value={noteVisibility}
                     onChange={e => setNoteVisibility(e.target.value as 'internal_only' | 'client_visible')}

@@ -1,5 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { Brain, LayoutDashboard, Building2, Zap, Landmark, Bot, BarChart3, Settings, LogOut, Users, Mail, MessageSquare, PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react';
+import { Brain, LayoutDashboard, Building2, Zap, Landmark, Bot, BarChart3, Settings, LogOut, Users, Mail, MessageSquare, PanelLeftClose, PanelLeftOpen, Search, X } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SidebarProps {
   activePage: string;
@@ -7,6 +8,8 @@ interface SidebarProps {
   onSignOut?: () => void;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
+  onCloseMobile?: () => void;
+  mobileOpen?: boolean;
 }
 
 const navItems = [
@@ -33,13 +36,14 @@ const navItems = [
   ]},
 ];
 
-const Sidebar = ({ activePage, onNavigate, onSignOut, collapsed = false, onToggleCollapsed }: SidebarProps) => {
+const Sidebar = ({ activePage, onNavigate, onSignOut, collapsed = false, onToggleCollapsed, onCloseMobile, mobileOpen = false }: SidebarProps) => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const initials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <aside className={`${collapsed ? 'w-[84px]' : 'w-[280px]'} bg-[#0B0F19] border-r border-[#1A2233] fixed top-0 left-0 bottom-0 flex flex-col z-[100] transition-[width] duration-200`}>
+    <aside className={`${collapsed ? 'w-[84px]' : 'w-[min(280px,calc(100vw-3rem))]'} ${isMobile ? (mobileOpen ? 'translate-x-0' : '-translate-x-full') : ''} bg-[#0B0F19] border-r border-[#1A2233] fixed top-0 left-0 bottom-0 flex flex-col z-[100] transition-[width,transform] duration-300`}>
       {/* Logo */}
       <div className="px-4 pt-4 pb-4 border-b border-[#1A2233]">
         <div className="flex items-center gap-3">
@@ -65,11 +69,20 @@ const Sidebar = ({ activePage, onNavigate, onSignOut, collapsed = false, onToggl
               {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
             </button>
           )}
+          {isMobile && onCloseMobile && (
+            <button
+              onClick={onCloseMobile}
+              className="ml-auto flex h-8 w-8 items-center justify-center rounded-md border border-[#1A2233] bg-[#111827] text-[#9CA3AF] transition hover:border-[#D4AF37]/35 hover:text-[#E5E7EB] lg:hidden"
+              aria-label="Close sidebar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="py-4 flex-1 overflow-y-auto px-3">
+      <nav className="hide-scrollbar py-4 flex-1 overflow-y-auto px-3 overscroll-contain">
         {navItems.map(section => (
           <div key={section.section} className="mb-3">
             {!collapsed && <div className="text-[10px] font-semibold tracking-[0.2em] text-[#5F6B7D] uppercase px-3 pt-2 pb-2">
